@@ -1,0 +1,77 @@
+---
+title: "NBA Raptor Metric Analysis"
+author: "Rashad Long"
+format: html
+editor: visual
+---
+
+## Overview
+
+The article chosen for this assignment was [**Introducing RAPTOR, Our New Metric For The Modern NBA**](https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/)**.** RAPTOR stands for Robust Algorithm (using) Player Tracking (and) ON/Off Ratings. It is a plus-minus statistic that measures the number of points a player contributes to his team's offense and defense per 100 possessions relative to a league average player. RAPTOR is based exclusively on publicly available data. The data sets used can be found here. [NBA Raptor Datasets](DATA607-Spring2024/Assignments/nba-raptor).
+
+The dataset that I used is the latest_RAPTOR_by_player.csv. In this assignment I am only interested in the Raptor stats on offense and defense and minutes played by each player, so I created a new data frame with only those columns. I also changed the name of the mp column to minutes_played.
+
+## Data Setup
+
+Importing `dplyr` library and `ggplot2`
+
+```{r}
+#| warning: false
+library(dplyr)
+library(ggplot2)
+```
+
+Reading the data from the csv file from Github.
+
+```{r read-data}
+urlfile<-'https://raw.githubusercontent.com/RDLong718/DATA607-Spring24/main/DATA607-Spring2024/Assignments/nba-raptor/latest_RAPTOR_by_player.csv'
+latest_Raptor_by_player<-read.csv(url(urlfile))
+```
+
+## Creating new data frame with only the columns needed
+
+```{r new-data}
+nba_raptor <-
+  latest_Raptor_by_player %>%
+  select(player_name, raptor_offense, raptor_defense, raptor_total, mp)
+```
+
+Changing `mp` variable to `minutes_played`
+
+```{r change-mp}
+nba_raptor <- nba_raptor %>% rename(minutes_played = mp)
+```
+
+View new column names
+
+```{r}
+colnames(nba_raptor)
+```
+
+## Analysis
+
+The top 10 players with the highest Total Raptor Score with over 1000 minutes played. Leading the pack is Nikola Jokic with a total Raptor score of 13.2
+
+```{r top-10-raptor-total}
+nba_raptor %>% 
+  arrange(desc(raptor_offense)) %>%
+  filter(minutes_played > 1000) %>%
+  head(10)
+```
+
+The relationship between the Raptor offense and defense metrics is shown in the scatter plot below. The plot shows that there is a positive correlation between the two metrics.
+
+```{r raptor-offense-defense}
+ggplot(nba_raptor, aes(x = raptor_offense, y = raptor_defense)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  labs(title = "Raptor Offense vs Defense",
+       x = "Raptor Offense",
+       y = "Raptor Defense")
+```
+
+## Conclusion
+
+I found it interesting in how the Raptor Metric works. [Methodological Explainer](https://fivethirtyeight.com/features/how-our-raptor-metric-works/). I would love to analyze the relationship between the Raptor Metric and other modern NBA metrics used. This would require reading in additional datasets and merging them together.
+
+One thing I would update is some of the names of the variables. For instance the `mp` variable should be changed to `minutes_played`. The `poss` variable should be changed to `possessions`. This would make the data more readable and easier to understand.

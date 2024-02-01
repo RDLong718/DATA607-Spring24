@@ -1,32 +1,4 @@
 {
-    "sources": [
-        {
-            "DOI": "10.1093/comjnl/27.2.97",
-            "URL": "http://dx.doi.org/10.1093/comjnl/27.2.97",
-            "author": [
-                {
-                    "family": "Knuth",
-                    "given": "D. E."
-                }
-            ],
-            "container-title": "The Computer Journal",
-            "id": "knuth1984",
-            "issue": "2",
-            "issued": {
-                "date-parts": [
-                    [
-                        1984,
-                        2,
-                        1
-                    ]
-                ]
-            },
-            "language": "en",
-            "page": "97-111",
-            "title": "Literate Programming",
-            "type": "article-journal",
-            "volume": "27"
-        }
-    ],
+    "sources": [],
     "project_biblios": []
 }
