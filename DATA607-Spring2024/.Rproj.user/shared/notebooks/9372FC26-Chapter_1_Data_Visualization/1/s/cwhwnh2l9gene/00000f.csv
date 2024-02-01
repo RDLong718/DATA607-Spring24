@@ -1,0 +1,2 @@
+"0","ggplot(penguins, aes(x = species)) +"
+"0","  geom_bar(color = ""red"")"

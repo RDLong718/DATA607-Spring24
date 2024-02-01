@@ -1,0 +1,32 @@
+{
+    "id": "B952AB49",
+    "path": "~/Education/CUNY School of Professional Stuides/DATA 607/DATA607-Spring2024/R_For_Data_Science/Chapter_1_Data_Visualization.qmd",
+    "project_path": "R_For_Data_Science/Chapter_1_Data_Visualization.qmd",
+    "type": "quarto_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1706422683778.0,
+    "source_on_save": true,
+    "relative_order": 4,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "299,0",
+        "scrollLine": "289",
+        "docOutlineVisible": "0",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "9352:13570.400390625"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1706435622,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1706435622086,
+    "read_only": false,
+    "read_only_alternatives": []
+}

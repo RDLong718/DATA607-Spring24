@@ -1,0 +1,4 @@
+"0",""
+"0","ggplot(duke_forest, aes(x = area)) +"
+"0","  geom_histogram(binwidth = 250) +"
+"0","  labs(title = ""Histogram of areas"")"
