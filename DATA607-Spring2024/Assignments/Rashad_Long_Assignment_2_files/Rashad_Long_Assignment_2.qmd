@@ -1,0 +1,80 @@
+---
+title: "R and SQL"
+author: "Rashad Long"
+editor: visual
+---
+
+```{r setup, include=FALSE}
+library(DBI)
+library(RMariaDB)
+library(dplyr)
+```
+
+## Part 1: Build Table
+
+I built a table using MySQL on the Azure cloud. The table consists of 30 observations and 3 variables. Table can be found on the server : [cunydata607sql.mysql.database.azure.com](cunydata607sql.mysql.database.azure.com).
+
+## Part 2: Store data in SQL database
+
+Data stored in the Database: <https://github.com/RDLong718/DATA607-Spring24/blob/main/DATA607-Spring2024/Assignments/Rashad_Long_Assignment_2_files/SQL%20Database.html>
+
+## Part 3: Transfer data from SQL database to R dataframe
+
+Load the information from the SQL database into an R dataframe
+
+```{r connection-parameters}
+# Parameters
+user <- 'rashad.long66'
+password <- 'rashad_password'
+database <- 'rashad.long66'
+host <- 'cunydata607sql.mysql.database.azure.com'
+port <- 3306
+```
+
+```{r connection}
+# Connect to the database
+connection <- DBI::dbConnect(drv = MariaDB(), 
+                             dbname = database,
+                             host = host, 
+                             port = port, 
+                             user = user, 
+                             password = password)
+```
+
+```{r fetch}
+# Fetch results
+tbl(connection, "ratings") %>% 
+  collect() -> data
+```
+
+```{r disconnect}
+# Disconnect from the database
+DBI::dbDisconnect(connection)
+```
+
+```{r preview}
+# Preview
+data
+```
+
+## Part 4: Missing Data Strategy
+
+For missing values (People who did not see the movie), I inputted null values. I did this so that when we are doing queries we can filter through and present only values that are not NULL.
+
+## Bonus Challenge Questions
+
+Use survey software to gather the information.
+
+-   Online survey platforms can be used such as Google Forms to collect the data instead of inputting manually. More research would have to be done in order to automate the process.
+
+Are you able to use a password without having to share the password with people who are viewing your code?
+
+-   Azure has management tools that can allow for secure storage and credentials so that the sharing credentials will not be needed.
+
+While it’s acceptable to create a single SQL table, can you create a normalized set of tables that corresponds to the relationship between your movie viewing friends and the movies being rated?
+
+-   If I were to create separate tables, one for movies and one for the people rating the movies, I could link them by a foreign key relationship. This will also eliminate the need for NULL values.
+
+Is there any benefit in standardizing ratings? How might you approach this?
+
+-   Standardizing ratings can help in comparing users/movies.

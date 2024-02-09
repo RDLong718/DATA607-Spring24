@@ -2,7 +2,7 @@
 
 # Parameters
 user <- 'rashad.long66'
-password <- 'M@Goo007!'
+password <- 'rashad_password'
 database <- 'rashad.long66'
 host <- 'cunydata607sql.mysql.database.azure.com'
 port <- 3306
@@ -18,11 +18,14 @@ connection <- DBI::dbConnect(drv = MariaDB(),
 # Fetch results
 tbl(connection, "ratings") %>% 
   collect() -> data
-#Disconnect from the database
+# Disconnect from the database
 DBI::dbDisconnect(connection)
 
 # Preview
 data
+
+# Implement an approach for missing data
+
 
 
 
