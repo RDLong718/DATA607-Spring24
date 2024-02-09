@@ -31,6 +31,20 @@ nba_raptor <-
 # change mp column to minutes_played
 nba_raptor <- nba_raptor %>% rename(minutes_played = mp)
 
+# sort the data by raptor_offense using pipes
+nba_raptor %>% 
+  arrange(desc(raptor_offense)) %>%
+  filter(minutes_played > 1000) %>%
+  head(10)
+
+# The relationship between the Raptor offense and defense scores is shown in the scatter plot below
+ggplot(nba_raptor, aes(x = raptor_offense, y = raptor_defense)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Raptor Offense vs Defense",
+       x = "Raptor Offense",
+       y = "Raptor Defense")
+
 
 
 
