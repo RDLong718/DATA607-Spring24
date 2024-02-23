@@ -17,17 +17,10 @@ paste(c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "c
 
 foods_formatted
 
+x <- ' [1] "bell pepper" "bilberry" "blackberry" "blood orange" [5] "blueberry" "cantaloupe" "chili pepper" "cloudberry" [9] "elderberry" "lime" "lychee" "mulberry" [13] "olive" "salal berry" '
 
-             
-             
-             
-             
-             
-             
-             
-             
-             
-             
+#Use regex to build list
+
              
              
              

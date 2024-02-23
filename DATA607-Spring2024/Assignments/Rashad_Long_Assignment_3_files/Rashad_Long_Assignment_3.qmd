@@ -5,10 +5,10 @@ format: html
 editor: visual
 ---
 
-
 ```{r library}
 library(stringr)
 ```
+
 ## 1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset \[<https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/>\]
 
 ```{r load_data}

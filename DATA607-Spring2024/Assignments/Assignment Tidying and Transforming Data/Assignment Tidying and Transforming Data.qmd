@@ -1,0 +1,18 @@
+---
+title: "Assignment Tidying and Transforming Data"
+author: "Rashad Long"
+format: html
+editor: visual
+---
+
+## The chart above describes arrival delays for two airlines across five destinations.![](images/clipboard-3958063356.png)
+
+
+```{r}
+library(tidyverse)
+```
+
+1.  Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above. You’re encouraged to use a “wide” structure similar to how the information appears above, so that you can practice tidying and transformations as described below.
+
+```
+```
