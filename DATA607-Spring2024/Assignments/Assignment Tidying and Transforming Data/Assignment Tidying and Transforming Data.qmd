@@ -5,14 +5,129 @@ format: html
 editor: visual
 ---
 
-## The chart above describes arrival delays for two airlines across five destinations.![](images/clipboard-3958063356.png)
+## The chart below describes arrival delays for two airlines across five destinations.
 
+![](https://github.com/RDLong718/DATA607-Spring24/blob/main/DATA607-Spring2024/Assignments/Assignment%20Tidying%20and%20Transforming%20Data/images/clipboard-3958063356.png?raw=true)
+
+```{r warning=FALSE, include=FALSE}
+library(tidyverse)
+library(psych)
+```
+
+1.  **Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above. You’re encouraged to use a “wide” structure similar to how the information appears above, so that you can practice tidying and transformations as described below.**
+
+I constructed a (CSV) file replicating the provided table. Subsequently, I uploaded the CSV file to GitHub. Finally, I utilized the `read.csv` function to import the data from the CSV file.
 
 ```{r}
-library(tidyverse)
+# Read in CSV file 
+my_flights <-
+  read.csv(
+    "https://raw.githubusercontent.com/RDLong718/DATA607-Spring24/main/DATA607-Spring2024/Assignments/Assignment%20Tidying%20and%20Transforming%20Data/tidy_flights.csv"
+  )
+
+my_flights
 ```
 
-1.  Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above. You’re encouraged to use a “wide” structure similar to how the information appears above, so that you can practice tidying and transformations as described below.
+2.  **Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy and transform your data.**
+
+The CSV file read in exactly like the table provided. The presence of a null row necessitated its removal, using the `na.omit()` function.
+
+```{r}
+# Remove null row
+my_flights <- na.omit(my_flights)
+my_flights
+```
+
+I first renamed the columns to make them more descriptive. I then transformed the data to a long format using the `pivot_longer` function. Since I intended on filling the Airline column down, I inserted NA for the blank values in preparation for using the `fill` function.(Doesn't fill blanks, only NA values)
+
+```{r}
+# Clean up Column names then transform data to long format then insert NA in preparation for using the fill down function
+
+my_flights <- my_flights |> # Rename columns
+  rename(
+    "Airline" = "X",
+    "Arrival" = "X.1",
+    "Los Angeles" = "Los.Angeles",
+    "San Diego" = "San.Diego",
+    "San Francisco" = "San.Francisco"
+  ) |> # Pivot data to long format
+  pivot_longer(
+    cols = -c("Airline", "Arrival"),
+    names_to = "Destination",
+    values_to = "Count"
+  ) |> # Insert NA for the blank values in the Airline column
+  mutate(Airline = ifelse(Airline == "", NA, Airline)) |> # Fill in the down direction
+  fill(Airline)
+
+my_flights
 
 ```
+
+3.  **Perform analysis to compare the arrival delays for the two airlines.**
+
+-   AM WEST had more delays than ALASKA with 787 delayed flights.
+
+By filtering the delayed flights and grouping by Airline I was able to summarize the flights by summing the amount for each Airline. I then built a bar plot to display the results.
+
+```{r delayed-flights}
+# Filter the Delayed flights then group by Airline then summarize the flights by summing the amount of each Airline. Build a bar plot to display the results
+my_flights |>
+  filter(Arrival == "delayed") |>
+  group_by(Airline) |>
+  summarise(Flights = sum(Count)) |>
+  arrange(desc(Flights)) |>
+  ggplot(aes(x = reorder(Airline, -Flights), y = Flights)) +
+  geom_bar(stat = "identity", fill = "red") +
+  labs(title = "Delayed Flights by Airline", x = "Airline", y = "Number of Flights") +
+  geom_text(aes(label = Flights), vjust = -.3)
 ```
+
+-   Of those delayed flights AM WEST had the most delays in Phoenix, while ALASKA had the most delays in Seattle.
+
+I shifted analysis from Airline-based grouping to destination-based grouping, enabling visualization of delayed flights by their destination. Bar charts were constructed and placed side by side to facilitate comparative analysis.
+
+```{r delayed-flights-destination}
+#| layout-ncol: 2
+
+my_flights |>
+  filter(Arrival == "delayed" , Airline == "AM WEST") |>
+  group_by(Destination) |>
+  summarise(Flights = sum(Count)) |>
+  arrange(desc(Flights)) |>
+  ggplot(aes(x = reorder(Destination, -Flights), y = Flights)) +
+  geom_bar(stat = "identity", fill = "red") +
+  labs(title = "Delayed Flights by Destination for AM WEST", x = "Destination", y = "Number of Flights") +
+  geom_text(aes(label = Flights), vjust = -.3)
+
+my_flights |>
+  filter(Arrival == "delayed" , Airline == "ALASKA") |>
+  group_by(Destination) |>
+  summarise(Flights = sum(Count)) |>
+  arrange(desc(Flights)) |>
+  ggplot(aes(x = reorder(Destination, -Flights), y = Flights)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(title = "Delayed Flights by Destination for ALASKA", x = "Destination", y = "Number of Flights") +
+  geom_text(aes(label = Flights), vjust = -.3)
+```
+
+-   Looking at the descriptive statistics of the delayed flights for both Airlines, ALASKA has a lower average of delayed flights with 100 compared to AM WEST 157 average delayed flights. AM WEST also has a higher deviation of delayed flights, which indicates that the number of the delayed flights are more variable than ALASKA.
+
+To analyze the descriptive statistics of delayed flights for both airlines, a dedicated dataframe was initially constructed, exclusively containing delayed flights. Subsequently, the `describeBy` function (psych package) used. The first column was not needed so I eliminated it. Additionally, the first column label was changed to enhance clarity. Finally, the resulting data was transformed into a tibble format to promote readability.
+
+```{r descriptive-statistics}
+# Summary of Descriptive statistics for the delayed flights grouped by Airline
+
+delayed_flights <- my_flights |> 
+  filter(Arrival =="delayed")
+delayed_flights
+
+delayed_flights_summary <- describeBy(delayed_flights$Count,group=delayed_flights$Airline,mat=TRUE)
+delayed_flights_summary
+
+delayed_flights_summary <- delayed_flights_summary[,-1]
+colnames(delayed_flights_summary)[1] <- "Airline"
+as_tibble(delayed_flights_summary)
+
+```
+
+***Conclusion*** This assignment provided an opportunity to practice tidying and transforming data using the `tidyr` and `dplyr` packages. It also allowed me to explore descriptive statistical summary packages such as `psych`. The data was transformed from a wide format to a long format, and descriptive statistics were calculated for the delayed flights grouped by Airline. The results were visualized using bar plots to compare the arrival delays for the two airlines and to compare the arrival delays for the two airlines by destination.
