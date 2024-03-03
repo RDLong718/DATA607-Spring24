@@ -1,0 +1,74 @@
+---
+title: "Language Diversity Dataset"
+authors: 
+  - name: Rashad Long
+    email: RDLong718@gmail.com
+  - name: Biyag Dukuray
+    email: biyag15@gmail.com
+format: html
+editor: visual
+---
+
+## Original Dataset
+
+**Data Source:** The Language Diversity Dataset, obtained from [untidydata repository](https://github.com/jvcasillas/untidydata)
+
+**Justification for Reshaping:** The dataset is currently in an "untidy" format, meaning it is not in a wide format suitable for extensive analysis. Reshaping the data into a wide format would improve its usability and facilitate efficient analysis.
+
+**Variable Renaming:** Additionally, certain variables within the dataset could be renamed for enhanced readability and clarity. The specific details regarding the desired variable names and the rationale behind renaming them are not provided in the given text.
+
+## Tidy Dataset Features
+
+| Features         | Description                                                                                             | Data Type |
+|---------------|-------------------------------------------|---------------|
+| Continent        | Name of the Continent                                                                                   | chr       |
+| Country          | Name of the Country                                                                                     | chr       |
+| Languages        | Number of Languages Spoken                                                                              | num       |
+| Area             | Area of land (km^2^)                                                                                    | num       |
+| Population       | Population (Thousands)                                                                                  | num       |
+| Weather Stations | The Number of weather stations used in calculation Mean Growth                                          | num       |
+| Mean Growth      | The Mean Growing Season (months)                                                                        | num       |
+| Growth Deviation | The standard deviation of the Growing Season values from the different weather stations in that country | num       |
+
+: Variable Definintions
+
+### Data Import
+
+Dataset was automatically loaded into the environment directly from dev tools package. Can also be found in [repo.](https://github.com/jvcasillas/untidydata)
+
+```{r view_data}
+#| warning: FALSE
+#| message: FALSE
+
+library(untidydata)
+library(tidyverse)
+library(untidydata)
+
+# Load the dataset
+data(language_diversity)
+str(language_diversity)
+head(language_diversity)
+```
+
+### Data Tidying and Transformation
+
+The data underwent a transformation to a wider format using the `pivot_wider()` function. This is done by using the names from the Measurement column and the values from the Value column. Subsequently, the column names were modified to enhance readability.
+
+```{r tidy_data}
+# Spread the data out using the pivot_wider function
+wide_languages <- language_diversity |> 
+  pivot_wider(names_from = Measurement, values_from = Value)
+
+# Change names of specific columns
+wide_languages <- wide_languages |>
+  rename(
+    "Languages" = "Langs",
+    "Weather Stations" = "Stations",
+    "Mean Growth" = "MGS",
+    "Growth Deviation" = "Std"
+  )
+str(wide_languages)
+head(wide_languages)
+```
+
+### Analysis
