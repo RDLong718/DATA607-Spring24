@@ -15,12 +15,12 @@ editor: visual
 
 **Justification for Reshaping:** The dataset is currently in an "untidy" format, meaning it is not in a wide format suitable for extensive analysis. Reshaping the data into a wide format would improve its usability and facilitate efficient analysis.
 
-**Variable Renaming:** Additionally, certain variables within the dataset could be renamed for enhanced readability and clarity. The specific details regarding the desired variable names and the rationale behind renaming them are not provided in the given text.
+**Variable Renaming:** Additionally, certain variables within the dataset could be renamed for enhanced readability and clarity.
 
 ## Tidy Dataset Features
 
 | Features         | Description                                                                                             | Data Type |
-|---------------|-------------------------------------------|---------------|
+|------------------|-------------------------------------|------------------|
 | Continent        | Name of the Continent                                                                                   | chr       |
 | Country          | Name of the Country                                                                                     | chr       |
 | Languages        | Number of Languages Spoken                                                                              | num       |
@@ -56,7 +56,7 @@ The data underwent a transformation to a wider format using the `pivot_wider()` 
 
 ```{r tidy_data}
 # Spread the data out using the pivot_wider function
-wide_languages <- language_diversity |> 
+wide_languages <- language_diversity |>
   pivot_wider(names_from = Measurement, values_from = Value)
 
 # Change names of specific columns
@@ -72,3 +72,38 @@ head(wide_languages)
 ```
 
 ### Analysis
+
+This data will be analyzed to determine which countries have the highest amount of languages per capita. Some countries have a vast amount of different cultures and diversity and to determine which has the most we'll create a new column with the values of the amount of languages per capita. By calculating this average language count per individual, we aim to identify the countries within this dataset that boast the highest average number of languages spoken per resident.
+
+```{r}
+pivoted_data <-
+  pivot_wider(language_diversity,
+              names_from = Measurement,
+              values_from = Value)
+
+pivoted_data$Avg_Langs_Per_Person <-
+  pivoted_data$Langs / pivoted_data$Population
+
+print(pivoted_data)
+
+```
+
+### Conclusion
+
+Based on the analysis of the dataset, the countries with the highest amount of languages per capita are Vanuatu, Papua New Guinea, French Guiana, Suriname and Gabon. The table above has been sorted by average amount of languages column which gives us this value.
+
+```{r}
+# | warning: FALSE
+
+sorted_data <-
+  pivoted_data[order(-pivoted_data$Avg_Langs_Per_Person),]
+
+top_10 <- head(sorted_data, 10)
+
+ggplot(top_10, aes(reorder(x = Country, Avg_Langs_Per_Person), y = Avg_Langs_Per_Person)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Top 10 Countries with the Highest Average Languages per Capita",
+       x = "Country",
+       y = "Average Languages per Capita")
+```

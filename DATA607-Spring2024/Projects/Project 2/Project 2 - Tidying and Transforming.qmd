@@ -28,7 +28,7 @@ editor: visual
 ## Tidy Dataset Features
 
 | Feature Name        | Description                                                                          | Data Type |
-|------------------|------------------------------------|------------------|
+|---------------------|--------------------------------------------------------------------------------------|-----------|
 | Device or Algo      | Name of the approved device or algorithm                                             | chr       |
 | Company             | Name of the parent company who created the product                                   | chr       |
 | Description         | Short description of the device/algorithm                                            | chr       |
