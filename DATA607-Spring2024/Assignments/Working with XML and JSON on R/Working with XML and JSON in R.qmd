@@ -12,19 +12,45 @@ editor: visual
 library(rvest) # for working with HTML
 library(xml2) # for working with XML
 library(jsonlite) # for working with JSON
-
+library(httr) # for working with HTTP
+library(tidyverse)
+library(XML)
 ```
 ## Read HTML Table
 
-```{r}
-df_html <- rvest::read_html("Working with XML and JSON in R")
+```{r read_HTML}
+# Read HTML table using rvest
+df_html <- rvest::read_html("https://github.com/RDLong718/DATA607-Spring24/blob/main/DATA607-Spring2024/Assignments/Working%20with%20XML%20and%20JSON%20on%20R/Working%20with%20XML%20and%20JSON%20in%20R.html") %>% 
+  rvest::html_nodes("table") %>% 
+  rvest::html_table(fill = TRUE)
+print(df_html)
+
 ```
 
 
+## Read XML
+
+```{r read_XML}
+df_xml <- read_xml("https://raw.githubusercontent.com/RDLong718/DATA607-Spring24/main/DATA607-Spring2024/Assignments/Working%20with%20XML%20and%20JSON%20on%20R/Working%20with%20XML%20and%20JSON%20in%20R.xml")
+print(df_xml)
+```
 
 
+## Read JSON
 
+```{r read_JSON}
+# Read JSON file using `jsonlite` package
 
+# Then we have to load JSON data 
+json_data <- fromJSON("https://raw.githubusercontent.com/RDLong718/DATA607-Spring24/main/DATA607-Spring2024/Assignments/Working%20with%20XML%20and%20JSON%20on%20R/Working%20with%20XML%20and%20JSON%20in%20R.json") 
+  
+# Then convert  the JSON data to dataframe 
+df_json <- as.data.frame(json_data) 
+  
+# At last print the output dataframe 
+print(df_json)
+
+```
 
 
 
