@@ -1,40 +1,39 @@
-<root>
-  <books>
-    <title>My Favorite Finance Books</title>
-    <book>
-      <title>No Filter: The Inside Story of Instagram</title>
-      <author>Sarah Frier</author>
-      <attributes>
-        <point>Profiles Mark Zukerberg.</point>
-        <point>Discusses the rapid growth of Instagram.</point>
-      </attributes>
-    </book>
-    <book>
-      <title>Rich Dad Poor Dad</title>
-      <author>Robert T. Kiyosaki</author>
-      <attributes>
-        <point>
-          Financial literacy means a broad understanding of accounting and
-          investing and knowing the markets and the law.
-        </point>
-        <point>
-          Each chapter ends with a “Study Session,” which reviews the material
-          and poses questions.
-        </point>
-      </attributes>
-    </book>
-    <book>
-      <title>Getting to Yes</title>
-      <author>Roger Fisher</author>
-      <author>William Ury</author>
-      <attributes>
-        <point>
-          Tips on developing a cordial relationship with the other side.
-        </point>
-        <point>
-          Avoiding the trap of being “nice” and getting walked all over.
-        </point>
-      </attributes>
-    </book>
-  </books>
-</root>
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+  <title>My Favorite Finance Books</title>
+  <book>
+    <title>No Filter: The Inside Story of Instagram</title>
+    <author>Sarah Frier</author>
+    <attributes>
+      <point>Profiles Mark Zukerberg.</point>
+      <point>Discusses the rapid growth of Instagram.</point>
+    </attributes>
+  </book>
+  <book>
+    <title>Rich Dad Poor Dad</title>
+    <author>Robert T. Kiyosaki</author>
+    <attributes>
+      <point>
+        Financial literacy means a broad understanding of accounting and
+        investing and knowing the markets and the law.
+      </point>
+      <point>
+        Each chapter ends with a “Study Session,” which reviews the material
+        and poses questions.
+      </point>
+    </attributes>
+  </book>
+  <book>
+    <title>Getting to Yes</title>
+    <author>Roger Fisher</author>
+    <author>William Ury</author>
+    <attributes>
+      <point>
+        Tips on developing a cordial relationship with the other side.
+      </point>
+      <point>
+        Avoiding the trap of being “nice” and getting walked all over.
+      </point>
+    </attributes>
+  </book>
+</books>
