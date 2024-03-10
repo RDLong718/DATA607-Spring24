@@ -1,0 +1,30 @@
+---
+title: "Working with XML and JSON in R"
+author: "Rashad Long"
+format: html
+editor: visual
+---
+
+## Load required packages
+
+```{r}
+#| warning: FALSE
+library(rvest) # for working with HTML
+library(xml2) # for working with XML
+library(jsonlite) # for working with JSON
+
+```
+## Read HTML Table
+
+```{r}
+df_html <- rvest::read_html("Working with XML and JSON in R")
+```
+
+
+
+
+
+
+
+
+
