@@ -1,11 +1,3 @@
-"0","#| label: fig-histogram"
-"0","#| fig-cap: ""Histograms of individual variables"""
-"0","#| fig-subcap:"
-"0","#|   - ""Histogram of `price`s"""
-"0","#|   - ""Histogram of `area`s"" "
-"0","#| layout-ncol: 2"
-"0","#| column: page-right"
-"0",""
-"0","ggplot(duke_forest, aes(x = price)) +"
-"0","  geom_histogram(binwidth = 50000) +"
-"0","  labs(title = ""Histogram of prices"")"
+version https://git-lfs.github.com/spec/v1
+oid sha256:72894a8a919494065f405847cad51dd6821c3399501cf4eee1ed4b1863f0f943
+size 378

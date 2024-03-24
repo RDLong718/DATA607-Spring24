@@ -1,2 +1,3 @@
-"0","ggplot(penguins, aes(x = species)) +"
-"0","  geom_bar(color = ""red"")"
+version https://git-lfs.github.com/spec/v1
+oid sha256:48864cabd597c2af1ce17a911a29d75905ac228238b141c2b8a0551ee902da9a
+size 77

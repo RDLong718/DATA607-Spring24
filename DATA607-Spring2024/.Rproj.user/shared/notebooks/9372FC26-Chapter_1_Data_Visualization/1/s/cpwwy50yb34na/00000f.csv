@@ -1,1 +1,3 @@
-"0","ggplot(penguins, aes(x=flipper_length_mm, y= body_mass_g)) + geom_point()"
+version https://git-lfs.github.com/spec/v1
+oid sha256:909a39c8388107e957124ed3eaad9e6c501886b485fa054fa74415fb77c37990
+size 80

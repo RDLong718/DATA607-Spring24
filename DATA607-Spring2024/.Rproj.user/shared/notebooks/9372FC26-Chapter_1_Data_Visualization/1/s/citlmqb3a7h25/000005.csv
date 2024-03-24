@@ -1,2 +1,3 @@
-"0","ggplot(penguins, aes(x=body_mass_g)) + geom_histogram(binwidth=2000)"
-"0",""
+version https://git-lfs.github.com/spec/v1
+oid sha256:94d49e170d0e932702a1347277a3d1962765dd3dc234fca74f49d6a9fff021ac
+size 82
