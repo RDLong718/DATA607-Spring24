@@ -1,0 +1,101 @@
+---
+title: "Super Bowl Data"
+author: "Rashad Long"
+format: html
+editor: visual
+---
+
+## Import Libraries
+
+```{r}
+#| warning: FALSE
+
+library(tidyverse)
+library(rvest)
+library(gtools)
+library(stringi)
+
+```
+
+## Scrape Data
+
+Use `read_html` to scrape the data from the website.
+
+```{r}
+
+url <- "https://www.espn.com/nfl/superbowl/history/winners"
+webpage <- read_html(url)
+
+```
+
+## Extract Data
+Use the `html_nodes` and `html_table` to extract HTML table element and conver it to dataframe.
+
+```{r}
+super_bowl_table <- html_nodes(webpage,'table')
+super_bowl_df <- html_table(super_bowl_table)[[1]]
+head(super_bowl_df)
+
+```
+Remove the first 2 rows and set column names
+```{r}
+
+super_bowl_df <- super_bowl_df[-c(1,2),]
+colnames(super_bowl_df) <- c("Super Bowl", "Date", "Venue", "Results")
+head(super_bowl_df)
+
+```
+Convert Roman numerals to standard format and convert date to standard format
+```{r}
+super_bowl_df$`Super Bowl` <- roman2int(super_bowl_df$`Super Bowl`)
+```
+
+## Data Cleaning
+
+Separate the results column into 2 columns
+```{r}
+super_bowl_df <- super_bowl_df %>%
+  separate("Results", into = c("Winner", "Loser"), sep = ",")
+head(super_bowl_df)
+
+```
+Split off the scores from the winner and loser columns
+```{r}
+pattern = " \\d+$"
+
+super_bowl_df <- super_bowl_df %>%
+  mutate(Winner = str_trim(Winner),
+         Loser = str_trim(Loser),
+         Winner_Score = as.numeric(stri_extract_last_regex(Winner, pattern)),
+         Loser_Score = as.numeric(stri_extract_last_regex(Loser, pattern)),
+         Winner = stri_replace_last_regex(Winner, pattern, ""),
+         Loser = stri_replace_last_regex(Loser, pattern, ""))
+
+head(super_bowl_df)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

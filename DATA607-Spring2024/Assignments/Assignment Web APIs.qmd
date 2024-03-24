@@ -1,0 +1,106 @@
+---
+title: "NYT Web API"
+author: "Rashad Long"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This project aims to construct a data frame containing the current New York Times Best Sellers List for the 'Combined Print & E-Book Fiction' category. The data will be retrieved by leveraging the [New York Times Books API](https://developer.nytimes.com/docs/books-product/1/overview).
+
+Imported `httr2` and `jsonlite`
+
+```{r}
+#| warning: FALSE
+
+library(httr2)
+library(jsonlite)
+library(dplyr)
+
+```
+
+To ensure accuracy, verification of the category name used by the New York Times Best Sellers List was required. This verification was achieved by querying the names list endpoint of the New York Times Books API, which provides a comprehensive list of available categories.
+
+```{r}
+#| echo: False
+
+api_key <- "DmmA4yncJS7ykyBcQGGtM5KxP4AYnaWa"
+
+```
+
+```{r}
+
+# Get the book list names from the New York Times API using api_key
+category_names_url <-
+  paste("https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=",
+        api_key,
+        sep = "")
+
+# Get the category names from the New York Times API JSON
+category_names <- fromJSON(category_names_url)
+
+# Extract the list name from the JSON
+category_names <- category_names$results
+
+# Extract the category names from the list name column
+category_names <- category_names$list_name_encoded
+
+# Display the category names
+category_names
+
+```
+
+The category name for the 'Combined Print & E-Book Fiction' category was confirmed to be 'combined-print-and-e-book-fiction'. The next step was to retrieve the current New York Times Best Sellers List for the 'Combined Print & E-Book Fiction' category.
+
+```{r}
+#| column: screen-inset
+
+# Get the current New York Times Best Sellers List for the 'Combined Print & E-Book Fiction' category
+best_sellers_url <-
+  paste(
+    "https://api.nytimes.com/svc/books/v3/lists/current/combined-print-and-e-book-fiction.json?api-key=",
+    api_key,
+    sep = ""
+  )
+
+# Get the current New York Times Best Sellers List for the 'Combined Print & E-Book Fiction' category JSON
+best_sellers <- fromJSON(best_sellers_url)
+
+# Extract the best sellers list from the JSON
+best_sellers <- best_sellers$results
+best_sellers <- best_sellers$books
+
+
+# I only need the rank, title, author, description and primary_ISBN13 columns
+best_sellers <- best_sellers |>
+  select(rank, title, author, description, primary_isbn13)
+
+# Display the best sellers list
+best_sellers
+
+```
+## Conclusion
+
+To ensure accurate category selection, the New York Times Books API was initially queried to retrieve a list of available categories. Following verification, the category name 'combined-print-and-e-book-fiction' was confirmed for the target data set. Subsequently, the current New York Times Best Sellers List for this specific category was retrieved via the API. The extracted data was then stored in a structured data frame, encompassing the following attributes for each book: rank, title, author, description, and primary ISBN13. Furthermore, I would like to try and make this interactive where the user can chose which best seller category they would like a list of.
+
+```{r}
+
+# Confirm the data type of best_sellers
+class(best_sellers)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

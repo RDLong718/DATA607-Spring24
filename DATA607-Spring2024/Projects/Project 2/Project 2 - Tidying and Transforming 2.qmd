@@ -20,7 +20,7 @@ editor: visual
 ## Tidy Dataset Features
 
 | Features         | Description                                                                                             | Data Type |
-|------------------|-------------------------------------|------------------|
+|------------------|---------------------------------------------------------------------------------------------------------|-----------|
 | Continent        | Name of the Continent                                                                                   | chr       |
 | Country          | Name of the Country                                                                                     | chr       |
 | Languages        | Number of Languages Spoken                                                                              | num       |

@@ -1,0 +1,118 @@
+---
+output: html_document
+---
+# Web Scraping with rvest
+
+### Scraping categories and projects from sourceforge.net
+
+andycatlin@maddogdatascience.com
+19-Oct-2014
+
+Here, we'll learn about Hadley Wickham's *rvest* package to scrape information
+from a web page.  
+
+Prior to scraping information from a web page, you need to determine how to
+identify the content that you want.  This often means studying the HTML page 
+source, and figuring out which CSS selector(s) both 
+
+(1) include all of the content that you want, and 
+(2) ideally exclude the content that you don't want.
+
+Having some knowledge of both HTML tags and CSS selectors is necessary for all but 
+the most trivial of web scraping assignments.  Even armed with this knowledge, figuring
+out the proper CSS selectors to use for even moderately complex web pages
+can be challenging.
+
+The SelectorGadget.com provides a great tool to help with this.  Hadley Wickham tweeted,
+"If you're doing web scraping (in any language) and don't know what SelectorGadget is, 
+go to http://selectorgadget.com/  RIGHT NOW."
+
+[This 5 minute video](https://www.youtube.com/watch?v=GxQLPNtJiMM) shows how to use SelectorGadget.com and rvest to scrape a web page.  
+
+Specifically, we'll look at how to build lists of project categories and projects 
+from sourceforge.net's home page.
+
+Using SelectorGadget.com, as shown in this five minute video, shows how we have 
+determined that we can identify the SourceForge.Net home page project categories 
+by using the CSS selector **.titled h2**, and we can identify the SourceForge.net 
+home page listed projects by using the CSS selector **.project info a**
+
+Below is some basic R code that uses the rvest package to take the information in
+these CSS selectors to build lists of project categories and projects.
+
+Note that Hadley Wickham's package package rvest
+is not yet on CRAN, so you need to follow installation
+instructions in the readme.MD at 
+https://github.com/hadley/rvest;
+you should also restart R and RStudio after you 
+install the devtools package in the instructions.
+
+```{r, comment=NA, results='hide', warning=FALSE}
+require(rvest)
+```
+
+Using the tags identified by SelectorGadget, we use rvest's verbs to 
+build lists of categories and projects.
+
+```{r, comment=NA}
+url<-"https://sourceforge.net/"
+header = {
+  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36" "X-Requested-With": "XMLHttpRequest"
+}
+
+r = requests.get(url, headers=header)
+
+dfs = pd.read_html(r.text)
+
+# categories <- url |>
+#   read_html() |>
+#   html_nodes(".titled h2") |>
+#   html_text()
+
+# categories <-url |>
+#   read_html()
+#   html_nodes(".titled h2") %>%
+#   html_text()
+# 
+# categories
+
+# projects<-url %>%
+# 
+#   html_nodes(".project-info a") %>%
+#   html_text()
+# 
+# projects
+```
+
+Here is a regular expression to trim leading and trailing spaces
+
+```{r,  comment=NA}
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+
+categories <- trim(categories)
+
+categories
+
+projects <- trim(projects)
+```
+
+Note that the first two projects are still messy.
+
+```{r, comment=NA}
+projects[1:2]
+```
+
+Replace 2+ whitespace characters with single whitespace characters.
+
+```{r, comment=NA}
+projects <- gsub("(?<=[\\s])\\s*|^\\s+$", "", projects, perl=TRUE)
+projects
+```
+
+Replace \\n with :
+
+```{r,  comment=NA, results='asis'}
+projects <- gsub("\\n",":", projects)
+knitr::kable(projects)
+```
+
