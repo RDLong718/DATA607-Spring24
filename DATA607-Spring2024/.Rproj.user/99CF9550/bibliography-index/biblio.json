@@ -1,4 +1,50 @@
 {
-    "sources": [],
+    "sources": [
+        {
+            "URL": "https://www.tidytextmining.com/sentiment",
+            "author": [
+                {
+                    "family": "Silge",
+                    "given": "Julia"
+                },
+                {
+                    "family": "Robinson",
+                    "given": "David"
+                }
+            ],
+            "id": "sentimentanalysis",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024,
+                        3
+                    ]
+                ]
+            },
+            "title": "Text mining with r: A tidy approach",
+            "title-short": "Text mining with r",
+            "type": ""
+        },
+        {
+            "URL": "https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326",
+            "author": [
+                {
+                    "family": "Flynn",
+                    "given": "Lauren"
+                }
+            ],
+            "id": "comparingdictionaries",
+            "issued": {
+                "date-parts": [
+                    [
+                        2023,
+                        9
+                    ]
+                ]
+            },
+            "title": "Comparing sentiment analysis dictionaries in r",
+            "type": ""
+        }
+    ],
     "project_biblios": []
 }

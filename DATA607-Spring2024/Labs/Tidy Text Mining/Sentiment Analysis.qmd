@@ -1,0 +1,236 @@
+---
+title: "Sentinment Analysis"
+author: "Rashad Long"
+bibliography: references.bib
+format: html
+editor: visual
+---
+
+## Sentiment Analysis with tidy data
+
+The `tidytext` package provides access to several sentiment lexicons. The three that are used in *Text Mining with R,* [Chapter 2 - Sentiment Analysis](https://www.tidytextmining.com/sentiment.html) are :
+
+-   `AFINN` from [Finn Årup Nielsen](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010),
+
+-   `bing` from [Bing Liu and collaborators](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html), and
+
+-   `nrc` from [Saif Mohammad and Peter Turney](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm).
+
+Besides the lexicons used in the text, I have also incorporated 3 other lexicons. The latter 2 are from the `quanteda` package. Those lexicons are:
+
+-   `loughran` from [Loughran, T. and McDonald, B](https://sraf.nd.edu/loughranmcdonald-master-dictionary/)
+
+-   `huliu`
+
+-   `gi`
+
+I also changed the corpus to books by Charles Darwin. Obtained from the `gutenbergr` package.
+
+```{r}
+#| warning: false
+
+if(!require("tidyverse")) {install.packages("tidyverse"); library("tidyverse")}
+if(!require("tidytext")) {install.packages("tidytext"); library("tidytext")}
+if(!require("quanteda")) {install.packages("quanteda"); library("quanteda")}
+if(!require("textstem")) {install.packages("textstem"); library("textstem")}
+if(!require("gutenbergr")) {install.packages("gutenbergr"); library("gutenbergr")}
+if(!require("quanteda.sentiment")) {install.packages("quanteda.sentiment"); library("quanteda.sentiment")}
+if(!require("scales")) {install.packages("scales"); library("scales")}
+if(!require("ggplot2")) {install.packages("ggplot2"); library("ggplot2")}
+
+```
+
+The function `get_sentiments()` allows us to get specific sentiment lexicons with the appropriate measures for each one. [@sentimentanalysis]
+
+```{r}
+
+# View the lexicon data-frames
+get_sentiments("afinn")
+get_sentiments("bing")
+get_sentiments("nrc")
+get_sentiments("loughran")
+
+```
+
+Since `gi` and `huliu` lexicons are returned as dictionaries, I wanted to convert them to data-frames in order to easily implement and compare them later on with the other lexicons.[@comparingdictionaries]
+
+```{r}
+
+#Create  a list from a data dictionary
+huliu <- data_dictionary_HuLiu %>% as.list()
+gi <- data_dictionary_geninqposneg %>% as.list()
+
+# Split the list into positive and negative sentiment data-frames
+huliu_pos <- data.frame(huliu[1], sentiment = "positive")
+names(huliu_pos)[1] <- "word"
+huliu_neg <- data.frame(huliu[2], sentiment = "negative")
+names(huliu_neg)[1] <- "word"
+
+gi_pos <- data.frame(gi[1], sentiment = "positive")
+names(gi_pos)[1] <- "word"
+gi_neg <- data.frame(gi[2], sentiment = "negative")
+names(gi_neg)[1] <- "word"
+
+# Combine the Data Frames
+huliu <- rbind(huliu_pos, huliu_neg)
+gi <- rbind(gi_pos, gi_neg)
+
+
+#Display the data-frames
+as_tibble(huliu)
+as_tibble(gi)
+
+```
+
+### Sentiment analysis with inner join
+
+What are the most common **fear** words in The *The Voyage of the Beagle*?
+
+First, we need to take the text of the novels and convert the text to the tidy format using unnest_tokens(). Let’s also set up some other columns to keep track of which line and chapter of the book each word comes from; we use group_by and mutate to construct those columns.
+
+```{r}
+
+# Load Charles Darwin's top books using gutenbergr
+my_mirror <- "http://mirror.csclub.uwaterloo.ca/gutenberg/"
+darwin_books <- gutenberg_download(c(944, 1228, 2300, 1227), mirror = my_mirror)
+as_tibble(darwin_books)
+
+# Identify line numbers, chapters, and books. Delete the ID column. Tokenize the text. 
+darwin_books <- darwin_books |> 
+  group_by(gutenberg_id) |> 
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]", ignore_case = TRUE))),
+         book = case_when(
+           gutenberg_id == 944 ~ "The Voyage of the Beagle",
+           gutenberg_id == 1228 ~ "On the Origin of Species",
+           gutenberg_id == 2300 ~ "The Descent of Man, and Selection in Relation to Sex",
+           gutenberg_id == 1227 ~ "The Expression of the Emotions in Man and Animals"
+         )) |>
+  ungroup() |> 
+  select(-gutenberg_id) |> 
+  unnest_tokens(word,text)
+
+as_tibble(darwin_books)
+
+```
+
+First, let’s use the NRC lexicon and filter() for the **fear** words. Next, let’s filter() the data frame with the text from the books for the words from *The Voyage of the Beagle* and then use inner_join() to perform the sentiment analysis. What are the most common **fear** words in *The Voyage of the Beagle*? Let’s use count() from dplyr
+
+```{r}
+
+# Use nrc lexicon to filter the fear words
+nrc_fear <- get_sentiments("nrc") |> 
+  filter(sentiment == "fear")
+
+darwin_books |>
+  filter(book == "The Voyage of the Beagle") |> 
+  inner_join(nrc_fear) |>
+  count(word, sort = TRUE)
+
+```
+
+We see the counts on the words that can generate fear in the book *The Voyage of the Beagle*.
+
+Next, we use the `bing` lexicon to find a sentiment score for each section of text. We use integer division (%/%) to define larger sections of text that span multiple lines. We can use the same pattern with count(), pivot_wider(), and mutate() to find the net sentiment in each of these sections of text.
+
+```{r}
+ 
+
+# Use Bing lexicon to find sentiment score for each section of text
+charles_darwin_sentiment <- darwin_books |> 
+  inner_join(get_sentiments("bing")) |> 
+  count(book, index = linenumber %/% 80, sentiment) |> 
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) |>
+  mutate(sentiment = positive - negative)
+
+# Plot the sentiment score across each novel
+  ggplot(charles_darwin_sentiment, aes(index, sentiment, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+  
+```
+
+### Comparing the 5 sentiment dictionaries
+
+Let’s use all 5 sentiment lexicons and examine how the sentiment changes across the narrative arc of *On the Origin of Species*.
+
+```{r}
+
+# Filter the book "On the Origin of Species"
+origin_species <- darwin_books |> 
+  filter(book == "On the Origin of Species")
+
+origin_species
+
+# Use inner_join() to calculate the sentiment in different ways
+afinn <- origin_species |> 
+  inner_join(get_sentiments("afinn")) |>
+  group_by(index = linenumber %/% 80) |>
+  summarise(sentiment = sum(value)) |>
+  mutate(method = "AFINN")
+
+bing_nrc_loughran_gi_huliu <- bind_rows(
+  origin_species |> 
+    inner_join(get_sentiments("bing")) |> 
+    mutate(method = "Bing et al."),
+  origin_species |>
+    inner_join(get_sentiments("loughran")) |> 
+    mutate(method = "Loughran"),
+  origin_species |>
+    inner_join(get_sentiments("nrc") |>
+                 filter(sentiment %in% c("positive", "negative"))) |>
+    mutate(method = "NRC"),
+  origin_species |> 
+    inner_join(gi) |> 
+    mutate(method = "GI"),
+  origin_species |>
+    inner_join(huliu) |> 
+    mutate(method  = "HuLiu")
+) |> 
+  count(method, index = linenumber %/% 80, sentiment) |> 
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = 0) |> 
+  mutate(sentiment = positive - negative)
+
+# Bind and Visualize the sentiment score across the book
+
+bind_rows(afinn, bing_nrc_loughran_gi_huliu) |>
+  ggplot(aes(index, sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap( ~ method, ncol = 1, scales = "free_y")
+
+
+```
+
+The 5 different lexicons show different sentiment scores across the narrative arc of *On the Origin of Species*. We see similar dips and peaks in sentiment at about the same places in the book, but the sentiment scores are different for each lexicon.The Loughran lexicon seems to have the most negative sentiment scores.
+
+Why does the Loughran lexicon have the most negative sentiment scores? Let’s look briefly at how many positive and negative words are in these lexicons.
+
+The Loughran lexicon has the most negative sentiment scores because it has the highest ratio of negative words with 87% of the words being negative. This is probably due to the fact that Loughran is meant for financial text and has a lot of negative words related to financial terms.
+
+```{r}
+
+# Count the positive and negative words in the lexicons add ratio for more clarity
+for (i in c("nrc", "bing", "loughran")) {
+  print(get_sentiments(i) |> 
+    filter(sentiment %in% c("positive", "negative")) |>
+    count(sentiment) |> 
+    mutate(ratio = n / sum(n)))
+}
+
+ as_tibble(huliu) |> 
+  filter(sentiment %in% c("positive", "negative")) |>
+  count(sentiment) |> 
+  mutate(ratio = n / sum(n))
+
+as_tibble(gi) |> 
+  filter(sentiment %in% c("positive", "negative")) |>
+  count(sentiment) |> 
+  mutate(ratio = n / sum(n))
+
+```
+
+### Conclusion
+
+I was able to compare the sentiment scores across the narrative arc of *On the Origin of Species* using 5 different sentiment lexicons. I also found that the Loughran lexicon had the most negative sentiment scores due to the high ratio of negative words in the lexicon. I also was able to examine the proportion of positive and negative words in the lexicons. I would have liked to figure out how to use another lexicon called `lang15` however, I could not get it to function properly. Due to time constraints, I was unable to figure out how to use it. I would have also liked to have a more in-depth analysis of the sentiment scores across the narrative arc of all of Charles Darwin's books. All in all, I was able to learn how to use several packages and I was able to learn how to use sentiment analysis in R.

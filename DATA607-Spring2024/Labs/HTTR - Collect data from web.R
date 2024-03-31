@@ -1,6 +1,6 @@
 # httr Request
 library(httr)
-r <- GET("http://httpbin.org/get", add_headers(Name = "Rashad"))
+r <- get("http://httpbin.org/get", add_headers(Name = "Rashad"))
 url <- "http://httpbin.org/post"
 body <- list(a=1,b=2,c=3)
 r <- POST(url, body = body, encode = "json")
