@@ -1,26 +1,3 @@
-[
-  {
-    "title": "No Filter: The Inside Story of Instagram",
-    "author": "Sarah Frier",
-    "attributes": [
-      "Profiles Mark Zukerberg.",
-      "Discusses the rapid growth of Instagram."
-    ]
-  },
-  {
-    "title": "Rich Dad Poor Dad",
-    "author": "Robert T. Kiyosaki",
-    "attributes": [
-      "Financial literacy means a broad understanding of accounting and investing and knowing the markets and the law.",
-      "Each chapter ends with a “Study Session,” which reviews the material and poses questions."
-    ]
-  },
-  {
-    "title": "Getting to Yes",
-    "author": ["Roger Fisher", "William Ury"],
-    "attributes": [
-      "Tips on developing a cordial relationship with the other side.",
-      "Avoiding the trap of being “nice” and getting walked all over."
-    ]
-  }
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:2e5ed900b8e70bbb384868d0f0e48d05ab5d7164c67e9729c7358ed3748b349c
+size 821

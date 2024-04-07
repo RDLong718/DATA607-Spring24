@@ -9,6 +9,11 @@ editor: visual
 title-block-banner: images/netflix_banner.png
 ---
 
+```{r setup, include=FALSE}
+if(!require("vembedr")) {install.packages("vembedr"); library("vembedr")}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 # **Netflix: A Global Leader in Streaming Entertainment**
 
 **Netflix, Inc.,** an American media company founded in 1997, is the world's preeminent subscription video on-demand (SVOD) service. Launched in 2007, it offers a vast library of original and acquired films and television shows across various genres. As of January 2024, Netflix boasts an impressive subscriber base exceeding 260 million paid memberships in over 190 countries, solidifying its position as the industry leader in streaming media.
@@ -57,7 +62,10 @@ Netflix leverages several key performance indicators (KPIs) to track and analyze
 
 ## Netflix Recommender System
 
-<iframe width="733" height="412" src="https://www.youtube.com/embed/4aNfPe-pQqI" title="Netflix Research: Recommendations" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+```{r netflix-video, echo=FALSE}
+vembedr::embed_url("https://www.youtube.com/watch?v=4aNfPe-pQqI")
+
+```
 
 #### **Leveraging Machine Learning for Personalized Recommendations**
 

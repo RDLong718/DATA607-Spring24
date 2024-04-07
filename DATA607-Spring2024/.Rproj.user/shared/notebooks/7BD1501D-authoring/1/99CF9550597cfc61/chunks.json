@@ -1,1 +1,3 @@
-{"chunk_definitions":[{"row":31,"row_count":1,"visible":true,"expansion_state":0,"options":{"engine":"r","label":"load-pkgs","code-summary":"Packages","message":false,"dev":"png"},"document_id":"4B1593E9","chunk_id":"cms5xeeup9g4m","chunk_label":"load-pkgs"},{"row":73,"row_count":1,"visible":true,"expansion_state":0,"options":{"engine":"r","label":"fig-histogram","layout-ncol":2,"column":"page-right","fig.cap":"Histograms of individual variables","fig.subcap":["Histogram of `price`s","Histogram of `area`s"],"dev":"png"},"document_id":"4B1593E9","chunk_id":"cuhitak4wxt52","chunk_label":"fig-histogram"}],"doc_write_time":1706415798}
+version https://git-lfs.github.com/spec/v1
+oid sha256:a178dbc3b0b30d8e9b5e8f2a9fa90883ab8cbb4dd67c098335031828ab9df7f1
+size 638
