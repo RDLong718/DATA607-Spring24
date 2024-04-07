@@ -21,41 +21,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
 }
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
 }
-</style>
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="Netflix Recommender Systems_files/libs/clipboard/clipboard.min.js"></script>
@@ -68,88 +54,182 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Netflix Recommender Systems_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Netflix Recommender Systems_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Netflix Recommender Systems_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background-image: url(images/netflix_banner.png);
+background-size: cover;
+      }
+</style>
 
 
 </head>
 
 <body class="fullcontent">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Netflix Recommender System</h1>
-</div>
-
-
-
-<div class="quarto-title-meta">
-
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Rashad Long </p>
-          </div>
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Netflix Recommender System</h1>
+                      </div>
   </div>
     
   
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Rashad Long </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">4/6/24</p>
+      </div>
+    </div>
     
-  </div>
+      
+    </div>
+    
   
+  </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
-</header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
-</section>
+
+<section id="netflix-a-global-leader-in-streaming-entertainment" class="level1">
+<h1><strong>Netflix: A Global Leader in Streaming Entertainment</strong></h1>
+<p><strong>Netflix, Inc.,</strong> an American media company founded in 1997, is the world’s preeminent subscription video on-demand (SVOD) service. Launched in 2007, it offers a vast library of original and acquired films and television shows across various genres. As of January 2024, Netflix boasts an impressive subscriber base exceeding 260 million paid memberships in over 190 countries, solidifying its position as the industry leader in streaming media.</p>
+<p><strong>Personalized Recommendations Drive User Engagement:</strong></p>
+<p>Central to Netflix’s success is its sophisticated recommendation system. This system, powered by advanced machine learning algorithms, analyzes a multitude of user data points, including viewing history, search queries, and user ratings. By leveraging these insights, Netflix curates a personalized selection of movies and TV shows, significantly enhancing user engagement and satisfaction. This data-driven approach ensures that subscribers discover content tailored to their individual preferences, fostering a more enjoyable and immersive entertainment experience. <span class="citation" data-cites="enwiki:1217276599">(<a href="#ref-enwiki:1217276599" role="doc-biblioref">Wikipedia contributors 2024</a>)</span></p>
 <section id="scenario-design-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="scenario-design-analysis">Scenario Design Analysis</h2>
 <section id="who-are-the-target-users" class="level3">
 <h3 class="anchored" data-anchor-id="who-are-the-target-users">Who are the target users?</h3>
-<p>Netflix targets a broad audience of individuals who are interested in seeing movies and TV shows online. Traditionally, Netflix’s age demographic is skewed towards a younger audience (Gen Z and millennials). 75% of Netflix users in the US are between 18 and 34 years old. <span class="citation" data-cites="Netflix">(<a href="#ref-Netflix" role="doc-biblioref"><strong>Netflix?</strong></a>)</span></p>
+<ul>
+<li><p><strong>Target Market:</strong> Netflix employs a broad market targeting strategy, encompassing individuals with a shared interest in streaming movies and television shows online.</p></li>
+<li><p><strong>Historical Demographics:</strong> Traditionally, Netflix’s subscriber base exhibited a skew towards younger age groups, with a significant concentration among Generation Z and Millennial demographics.</p></li>
+<li><p><strong>US Age Demographics:</strong> Data indicates that within the United States, approximately 75% of Netflix users belong to the 18-34 year old age bracket. <span class="citation" data-cites="Ana2023">(<a href="#ref-Ana2023" role="doc-biblioref">Gajic, n.d.</a>)</span></p></li>
+</ul>
 <p><img src="images/clipboard-2759088475.png" class="img-fluid"></p>
-<p>Netflix also targets a global audience. The US and Canada accounts for the majority of Netflix subscribers. However, recently its reach in Europe, Middle East and Asia has increased dramatically.</p>
+<p>Netflix has established a presence in a global market, with a subscriber base concentrated in the United States and Canada. However, the company has recently experienced significant growth in its reach across Europe, the Middle East, and Asia.</p>
 <p><img src="images/clipboard-3901561552.png" class="img-fluid"></p>
 </section>
 </section>
-<section id="what-are-their-key-goals" class="level2">
-<h2 class="anchored" data-anchor-id="what-are-their-key-goals">What are their key goals?</h2>
-<div>
-<div class="callout callout-style-default callout-note callout-titled">
+<section id="what-are-the-key-goals" class="level2">
+<h2 class="anchored" data-anchor-id="what-are-the-key-goals">What are the key goals?</h2>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon"></i>
+<i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+Netflix Mission Statement
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The key goals of Netflix users are to:</p>
+<p>“At Netflix, we want to entertain the world. Whatever your taste, and no matter where you live, we give you access to best-in-class TV series, documentaries, feature films and games. Our members control what they want to watch, when they want it, in one simple subscription. We’re streaming in more than 30 languages and 190 countries, because great stories can come from anywhere and be loved everywhere. We are the world’s biggest fans of entertainment, and we’re always looking to help you find your next favorite story.” <span class="citation" data-cites="Netflix2024">(<a href="#ref-Netflix2024" role="doc-biblioref">Netflix, n.d.</a>)</span></p>
 </div>
 </div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-<p>You can add options to executable code like this</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 4</code></pre>
-</div>
-</div>
-<p>The <code>echo: false</code> option disables the printing of code (only output is displayed).</p>
+<p><strong>Netflix’s Strategic Alignment and Performance Measurement</strong></p>
+<p>Netflix’s success can be attributed to a strong alignment between its mission and vision. This translates into clear tactical methods that propel the brand forward and achieve its vision. This strategic alignment serves as the foundation for achieving positive results.</p>
+<p><strong>Key Performance Indicators (KPIs) for Monitoring Goals</strong></p>
+<p>Netflix leverages several key performance indicators (KPIs) to track and analyze progress towards its goals. These KPIs can be categorized as follows:</p>
+<ul>
+<li><p><strong>Reach:</strong> This metric measures the number of individuals within the target audience who have the potential to see Netflix’s advertisements on social media platforms.</p></li>
+<li><p><strong>Engagement:</strong> This KPI assesses how users interact with the content Netflix presents to them. This could involve metrics like clicks, shares, comments, or time spent viewing content.</p></li>
+<li><p><strong>Customer Advocacy:</strong> This metric goes beyond simple interaction and measures whether users are discussing Netflix content with others on their own initiative, signifying positive brand sentiment.</p></li>
+</ul>
+</section>
+<section id="netflix-recommender-system" class="level2">
+<h2 class="anchored" data-anchor-id="netflix-recommender-system">Netflix Recommender System</h2>
+<iframe width="733" height="412" src="https://www.youtube.com/embed/4aNfPe-pQqI" title="Netflix Research: Recommendations" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+<section id="leveraging-machine-learning-for-personalized-recommendations" class="level4">
+<h4 class="anchored" data-anchor-id="leveraging-machine-learning-for-personalized-recommendations"><strong>Leveraging Machine Learning for Personalized Recommendations</strong></h4>
+<p>Netflix utilizes Apache Spark and machine learning algorithms to power its highly successful movie recommendation system. This system is responsible for over 80% of the content users choose to watch on the platform.</p>
+</section>
+<section id="personalization-process" class="level4">
+<h4 class="anchored" data-anchor-id="personalization-process"><strong>Personalization Process</strong></h4>
+<ul>
+<li><p><strong>Dynamic Home Page:</strong> Upon logging in, users encounter a personalized home page featuring curated rows of movie recommendations.</p></li>
+<li><p><strong>Data-Driven Selection:</strong> Netflix employs machine learning to analyze user data and preferences, including historical viewing habits and interaction patterns. This analysis informs the selection of specific categories and movie titles displayed on the home page.</p></li>
+<li><p><strong>Ranking and Relevance:</strong> The recommendation system goes beyond simply presenting options. It leverages machine learning to sort and rank movie recommendations based on their predicted relevance to individual user preferences. Apache Spark clusters play a crucial role in efficiently running these machine learning pipelines.</p></li>
+<li><p><strong>Predictive Modeling:</strong> The core of the recommendation system lies in its ability to predict user interest. This is achieved by gathering a comprehensive dataset encompassing user interactions, viewing histories of similar users, metadata from previously watched content, and user-specific device preferences.</p></li>
+</ul>
+</section>
+<section id="recommendation-algorithm" class="level4">
+<h4 class="anchored" data-anchor-id="recommendation-algorithm"><strong>Recommendation Algorithm</strong></h4>
+<p>While the specifics of Netflix’s recommendation algorithm remain undisclosed, it is believed to be a hybrid approach that combines collaborative filtering and content-based filtering techniques. <span class="citation" data-cites="RecoAI">(<a href="#ref-RecoAI" role="doc-biblioref"><span>“Netflix Recommendation System: How It Works,”</span> n.d.</a>)</span></p>
+<p>Netflix’s recommendation system is very complex and uses various technologies such as:</p>
+<ul>
+<li><p><strong>Reinforcement learning</strong> (RL algorithms don’t need any information in advance; they learn from data during the process)</p></li>
+<li><p><strong>Neural networks</strong> (they try to imitate the way the human cortex works; neural networks are extremely important in deep learning)</p></li>
+<li><p><strong>Causal modelling</strong> (it’s an analytically technique concentrated on the cause-and-effect relationships)</p></li>
+<li><p><strong>Probabilistic graphical models</strong> (PGM expresses the conditional dependence structure between random variables)</p></li>
+<li><p><strong>Matrix factorization</strong> (it’s a class of collaborative filtering algorithms used specifically in recommendation systems)</p></li>
+<li><p><strong>Ensemble learning</strong> (a technique using multiple learning algorithms to achieve better results)</p></li>
+</ul>
+</section>
+</section>
+<section id="improvements" class="level2">
+<h2 class="anchored" data-anchor-id="improvements">Improvements</h2>
+<section id="enhancing-user-immersion-through-advanced-personalization" class="level4">
+<h4 class="anchored" data-anchor-id="enhancing-user-immersion-through-advanced-personalization"><strong>Enhancing User Immersion Through Advanced Personalization</strong></h4>
+<p>While Netflix’s current recommendation algorithms leverage machine learning for personalization, there’s potential for further improvement by incorporating a broader range of user behavior data.</p>
+<p><strong>Beyond Explicit Ratings:</strong></p>
+<p>The current system places significant weight on explicit user ratings. However, a more nuanced understanding of user preferences could be achieved by analyzing additional user behavior metrics. This includes:</p>
+<ul>
+<li><p><strong>Watch History Completion Rates:</strong> Analyzing the percentage of a movie or show a user completes can reveal their level of engagement with the content.</p></li>
+<li><p><strong>Time Spent Browsing and Not Selecting:</strong> Time spent browsing specific genres or categories without selecting content can indicate user interest, even in the absence of an explicit selection.</p></li>
+<li><p><strong>Re-watching Behavior:</strong> Re-watching behavior is a strong indicator of user preference and satisfaction with a particular movie or show.</p></li>
+</ul>
+<p><strong>Utilizing Implicit User Data:</strong></p>
+<p>Netflix could potentially explore collecting additional implicit user data through user hardware, while ensuring user privacy is maintained. This could involve:</p>
+<ul>
+<li><p><strong>Eye-Tracking and Facial Recognition (with Opt-In):</strong> With user consent, Netflix could leverage eye-tracking and facial recognition technology on camera-enabled devices to gauge user attention and emotional response to content. This data could provide valuable insights into user engagement.</p></li>
+<li><p><strong>Smart Device Integration:</strong> Integration with smart-watches and smart home devices (with user consent) could offer insights into the environment in which users watch content. This could be used to refine recommendations based on the user’s mood or activity.</p></li>
+</ul>
+<p><strong>Genre Sub-categorization:</strong></p>
+<p>Refining genre classifications into sub-genres would allow for a more specific user experience. This would enable users to explore content that caters to their specific preferences within broader categories. For example, distinguishing between “comedy” and sub-genres like “stoner comedy,” “offbeat humor,” or “dark humor” would provide users with more tailored recommendations.</p>
+</section>
+<section id="social-recommendations" class="level4">
+<h4 class="anchored" data-anchor-id="social-recommendations"><strong>Social Recommendations:</strong></h4>
+<p>One approach could involve leveraging social media profiles (with user consent) to personalize recommendations based on the viewing habits of friends and family. This could be implemented as follows:</p>
+<ul>
+<li><p><strong>Real-Time Visibility:</strong> Users could opt-in to see what their friends and family are currently watching on Netflix in real-time. This could spark conversations and encourage co-viewing experiences.</p></li>
+<li><p><strong>Enhanced Recommendation Algorithm:</strong> Social viewing data could be incorporated into the recommendation algorithm, suggesting content that aligns with the preferences of a user’s social circle.</p></li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Netflix, the world’s leading internet television network and most valuable streaming service, has garnered acclaim for its innovative recommendation system. Leveraging cutting-edge technologies and machine learning, Netflix’s algorithm delivers accurate and efficient suggestions with minimal latency. The system’s effectiveness stems from a hybrid approach, combining collaborative filtering and content-based filtering techniques to recommend content that aligns with user preferences, interests, and potential discoveries. Despite its success, there’s always room for improvement. Social Integration, Genre Sub-categorization, and User hardware utilization can vastly improve the recommendation system and ensure that Netflix remains at the forefront of delivering a personalized and engaging user exp</p>
+<p>I was able to research and learn more about content-based and collaborative filtering in my journey studying Netflix. I learned what Apache Spark is and I learned more about different machine learning technologies that Netflix does. I would like to continue to dive into machine learning and recommendation systems. I will start with <a href="http://www.guidetodatamining.com/">A Programmer’s Guide to Data Mining</a>.</p>
+
+</section>
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Ana2023" class="csl-entry" role="listitem">
+Gajic, Ana. n.d. <span>“Netflix Statistics.”</span> <a href="https://99firms.com/blog/netflix-statistics/#:~:text=The%20platform%20is%20used%20by,income%20of%20less%20than%20%2450%2C000.">https://99firms.com/blog/netflix-statistics/#:~:text=The%20platform%20is%20used%20by,income%20of%20less%20than%20%2450%2C000.</a>
+</div>
+<div id="ref-Netflix2024" class="csl-entry" role="listitem">
+Netflix. n.d. <span>“The Story of Netflix.”</span> <a href="https://about.netflix.com/en">https://about.netflix.com/en</a>.
+</div>
+<div id="ref-RecoAI" class="csl-entry" role="listitem">
+<span>“Netflix Recommendation System: How It Works.”</span> n.d. <a href="https://recoai.net/netflix-recommendation-system-how-it-works/">https://recoai.net/netflix-recommendation-system-how-it-works/</a>.
+</div>
+<div id="ref-enwiki:1217276599" class="csl-entry" role="listitem">
+Wikipedia contributors. 2024. <span>“Netflix — <span>Wikipedia</span><span>,</span> the Free Encyclopedia.”</span> <a href="https://en.wikipedia.org/w/index.php?title=Netflix&amp;oldid=1217276599">https://en.wikipedia.org/w/index.php?title=Netflix&amp;oldid=1217276599</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

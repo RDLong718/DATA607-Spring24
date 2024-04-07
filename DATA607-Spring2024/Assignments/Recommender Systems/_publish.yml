@@ -1,0 +1,4 @@
+- source: Netflix Recommender Systems.qmd
+  quarto-pub:
+    - id: ba4c14b8-cda3-4677-b8ec-9490a89fd073
+      url: 'https://rdlong718.quarto.pub/netflix-recommender-system'

@@ -22,6 +22,44 @@
             "id": "Netflix2024",
             "title": "The story of netflix",
             "type": ""
+        },
+        {
+            "URL": "https://youtu.be/4aNfPe-pQqI",
+            "author": [
+                {
+                    "family": "Netflix"
+                }
+            ],
+            "id": "youtubeNetflix",
+            "title": "Netflix research: recommendations",
+            "title-short": "Netflix research",
+            "type": ""
+        },
+        {
+            "URL": "https://recoai.net/netflix-recommendation-system-how-it-works/",
+            "id": "RecoAI",
+            "title": "Netflix recommendation system: How it works",
+            "title-short": "Netflix recommendation system",
+            "type": ""
+        },
+        {
+            "URL": "https://en.wikipedia.org/w/index.php?title=Netflix&oldid=1217276599",
+            "author": [
+                {
+                    "literal": "Wikipedia contributors"
+                }
+            ],
+            "id": "enwiki:1217276599",
+            "issued": {
+                "date-parts": [
+                    [
+                        2024
+                    ]
+                ]
+            },
+            "note": "[Online; accessed 7-April-2024]",
+            "title": "Netflix — Wikipedia, the free encyclopedia",
+            "type": ""
         }
     ],
     "project_biblios": []
