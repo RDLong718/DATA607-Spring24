@@ -8,8 +8,19 @@
                     "given": "Ana"
                 }
             ],
-            "id": "Netflix",
+            "id": "Ana2023",
             "title": "Netflix statistics",
+            "type": ""
+        },
+        {
+            "URL": "https://about.netflix.com/en",
+            "author": [
+                {
+                    "family": "Netflix"
+                }
+            ],
+            "id": "Netflix2024",
+            "title": "The story of netflix",
             "type": ""
         }
     ],
