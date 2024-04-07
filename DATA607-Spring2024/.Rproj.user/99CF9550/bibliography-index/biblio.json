@@ -1,48 +1,15 @@
 {
     "sources": [
         {
-            "URL": "https://www.tidytextmining.com/sentiment",
+            "URL": "https://99firms.com/blog/netflix-statistics/#:~:text=The%20platform%20is%20used%20by,income%20of%20less%20than%20%2450%2C000.",
             "author": [
                 {
-                    "family": "Silge",
-                    "given": "Julia"
-                },
-                {
-                    "family": "Robinson",
-                    "given": "David"
+                    "family": "Gajic",
+                    "given": "Ana"
                 }
             ],
-            "id": "sentimentanalysis",
-            "issued": {
-                "date-parts": [
-                    [
-                        2024,
-                        3
-                    ]
-                ]
-            },
-            "title": "Text mining with r: A tidy approach",
-            "title-short": "Text mining with r",
-            "type": ""
-        },
-        {
-            "URL": "https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326",
-            "author": [
-                {
-                    "family": "Flynn",
-                    "given": "Lauren"
-                }
-            ],
-            "id": "comparingdictionaries",
-            "issued": {
-                "date-parts": [
-                    [
-                        2023,
-                        9
-                    ]
-                ]
-            },
-            "title": "Comparing sentiment analysis dictionaries in r",
+            "id": "Netflix",
+            "title": "Netflix statistics",
             "type": ""
         }
     ],

@@ -1,0 +1,46 @@
+---
+title: "Netflix Recommender System"
+author: "Rashad Long"
+format: html
+bibliography: references.bib
+editor: visual
+---
+
+## Introduction
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Scenario Design Analysis
+
+### Who are the target users?
+
+Netflix targets a broad audience of individuals who are interested in seeing movies and TV shows online. Traditionally, Netflix's age demographic is skewed towards a younger audience (Gen Z and millennials). 75% of Netflix users in the US are between 18 and 34 years old. [@Netflix]
+
+![](images/clipboard-2759088475.png)
+
+Netflix also targets a global audience. The US and Canada accounts for the majority of Netflix subscribers. However, recently its reach in Europe, Middle East and Asia has increased dramatically.
+
+![](images/clipboard-3901561552.png)
+
+## What are their key goals?
+
+<div>
+
+:::{.callout-note}
+The key goals of Netflix users are to:
+:::
+
+</div>
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
