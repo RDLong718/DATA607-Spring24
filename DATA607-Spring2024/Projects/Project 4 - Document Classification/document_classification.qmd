@@ -1,0 +1,316 @@
+---
+title: "Document Classification -  Logistic Regression"
+author: "Rashad Long"
+date: 2024-04-14
+date-format: short
+format: html
+bibliography: references.bib
+editor: visual
+title-block-banner: images/obama_banner.jpg
+---
+
+## Introduction
+
+Using the [Miller Center API,](https://data.millercenter.org/index.html) we will be analyzing the speeches of the Presidents of the United States. We will be using the transcript of the speeches to classify the speeches into two categories: speeches by Barack Obama and speeches by other Presidents. We will be comparing the `CountVectorizer` and `TfidfVectorizer` to convert the text data into numerical data. We will be using the Logistic Regression model to classify the speeches.
+
+### Who is the Miller Center?
+
+The Miller Center is a nonpartisan affiliate of the University of Virginia that specializes in presidential scholarship, public policy, and political history, providing critical insights for the nation's governance challenges. They have an extensive collection of [Presidential Speeches](https://millercenter.org/the-presidency/presidential-speeches). This is a corpus of text data–speeches given by U.S. presidents, from George Washington to Joe Biden. Although it isn't an exhaustive collection, there are over 1,000 speeches available. The collection is available through their REST API.
+
+### What is the Logistic Regression model?
+
+Logistic Regression is a supervised machine learning algorithm that estimates the probability of an event belonging to a specific class. It does this by analyzing relationships between an independent variable and a target variable.
+
+#### **Core functionalities:**
+
+-   **Classification:** Logistic regression excels at predicting the class label (e.g., positive or negative, spam or not-spam) for a data point based on its features.
+
+-   **Probabilistic Output:** Unlike some classification algorithms that simply predict a class label, logistic regression outputs a probability value between 0 and 1. This indicates the likelihood of a data point belonging to the positive class.
+
+**Applications:**
+
+Logistic regression is a versatile tool used across various domains due to its interpret-ability and efficiency. Here are some common applications:
+
+-   **Spam Filtering:** Classifying emails as spam or not-spam based on features like sender address, keywords, and content.
+
+-   **Customer Churn Prediction:** Identifying customers at risk of leaving a service based on their past behavior and account information.
+
+-   **Fraud Detection:** Analyzing transactions to predict fraudulent activity based on patterns in spending habits.
+
+-   **Medical Diagnosis:** Supporting medical professionals by analyzing patient data (e.g., symptoms, test results) to predict the presence or absence of a disease (often as a preliminary step).
+
+-   **Risk Assessment:** Estimating the likelihood of an event occurring (e.g., credit risk assessment for loan approvals).
+
+**Model Training:**
+
+-   Logistic regression learns from labeled data where each data point has a feature vector and a corresponding class label.
+
+-   The model identifies patterns in the data that differentiate the classes and uses these patterns to make predictions on unseen data.
+
+**Advantages:**
+
+-   **Interpret-ability:** The coefficients learned by the model provide insights into the relationship between features and the target variable. This can be helpful for understanding how different features influence the model's predictions.
+
+-   **Simplicity:** Logistic regression is a relatively simple algorithm compared to some deep learning models. This makes it easier to understand, implement, and interpret results.
+
+-   **Efficiency:** It's computationally efficient to train and make predictions, making it suitable for large data-sets.
+
+**Disadvantages:**
+
+-   **Limited to Binary Classification:** The basic logistic regression model is designed for binary classification tasks (two classes). Extensions exist for multi-class problems, but they might be less interpret-able.
+
+-   **Non-linear Relationships:** Logistic regression struggles to capture complex, non-linear relationships between features. For such cases, other machine learning algorithms might be more suitable.
+
+-   **Data Preprocessing:** Logistic regression often requires feature scaling or normalization to ensure all features are on a similar scale. This can be an additional preprocessing step.
+
+```{python}
+
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
+from sklearn import metrics
+
+import string
+import spacy
+
+import json, requests, sys
+
+np.random.seed(42)
+
+```
+
+#### Import Data from The Mill Center
+
+```{python}
+
+# Call the Rest API and save to speeches.json
+import json, requests, sys
+
+endpoint = "https://api.millercenter.org/speeches"
+out_file = "speeches.json"
+
+r = requests.post(url=endpoint)
+data = r.json()
+items = data['Items']
+
+while 'LastEvaluatedKey' in data:
+    parameters = {"LastEvaluatedKey": data['LastEvaluatedKey']['doc_name']}
+    r = requests.post(url = endpoint, params = parameters)
+    data = r.json()
+    items += data['Items']
+    print(f'{len(items)} speeches')
+
+with open(out_file, "w") as out:
+    out.write(json.dumps(items))
+    print(f'wrote results to file: {out_file}')
+    
+```
+
+Once I download the speeches I then load them to the Data-frame. `pd.json_normalize` flattens the structure, making the top-level keys as column names in the Data-frame.
+
+```{python}
+
+# Load speeches.json and normalize
+with open('speeches.json') as f:
+    data = json.load(f)
+    
+speeches = pd.json_normalize(data)
+
+```
+
+I added variable that marks the speeches by Barack Obama as TRUE and the rest as FALSE.
+
+```{python}
+
+# Add a new variable where it says Trump mark as TRUE or else False
+speeches['IsObama'] = speeches['president'].apply(lambda x: True if x == 'Barack Obama' else False)
+
+```
+
+### What is the `spaCy`?
+
+`spaCy` is an open-source natural language processing library designed to be fast and efficient. It provides a simple and intuitive API for diving into common NLP tasks, such as part-of-speech tagging, named entity recognition, and text classification. `spaCy` is built on the latest research and is designed to be used in real-world applications.
+
+```{python}
+
+# We will be loading the spacy model for English language
+nlp = spacy.load('en_core_web_sm')
+stop_words = nlp.Defaults.stop_words
+print(stop_words)
+
+```
+
+```{python}
+
+# get the punctuations
+punctuations = string.punctuation
+print(punctuations)
+
+```
+
+```{python}
+
+def spacy_tokenizer(sentence):
+    """
+  This function leverages spaCy to preprocess a sentence by performing lemmatization, lowercasing, and optional stop word/punctuation removal.
+  
+  Args:
+    sentence: A string representing a sentence to be tokenized.
+  
+  Returns: 
+    A list of preprocessed tokens.
+  """
+
+  
+    # Creating our token object, which is used to create documents with linguistic annotations.
+    doc = nlp(sentence)
+    
+    # print(doc)
+    # print(type(doc))
+    
+    # Lemmatizing each token and converting each token into lowercase
+    mytokens = [word.lemma_.lower().strip() for word in doc]
+    
+    # print(mytokens)
+    
+    # Removing stop words and punctuation
+    mytokens = [word for word in mytokens if word not in stop_words and word not in punctuations]
+    
+    # return preprocessed list of tokens
+    return mytokens
+  
+```
+
+### What is `CountVectorizer`?
+
+`CountVectorizer` is a tool used in Natural Language Processing (NLP) tasks for converting textual data into a numerical representation suitable for machine learning algorithms. It works by creating a document-term matrix, which summarizes the frequency (count) of words or n-grams (sequences of words) appearing in each document within a corpus (collection of text documents).
+
+**Benefits of using `CountVectorizer`:**
+
+-   **Simple and efficient:** It's a straightforward way to represent text data numerically for machine learning models that work with numbers.
+
+-   **Focuses on word frequency:** It captures the importance of words based on their occurrence within documents.
+
+-   **Suitable for various NLP tasks:** It can be used for tasks like document classification, topic modeling, and information retrieval.
+
+**Limitations of \``CountVectorizer`:**
+
+-   **Ignores word order and context:** The order and context in which words appear are not considered, which can be important for understanding meaning.
+
+-   **Doesn't handle word meaning or sentiment:** It treats all words equally, regardless of their meaning or sentiment.
+
+```{python}
+# CountVectorizer
+count_vector = CountVectorizer(tokenizer = spacy_tokenizer,token_pattern=None)
+```
+
+Next, I split the speech data into training and testing sets, ensuring stratified sampling to maintain class balance.
+
+```{python}
+# Begin the process of splitting the data into training and testing
+from sklearn.model_selection import train_test_split
+
+X = speeches['transcript'] # the features we want to analyze
+ylabels = speeches['IsObama'] # the labels, or answers, we want to test against
+
+X_train, X_test, y_train, y_test = train_test_split(X, ylabels, test_size=0.3,stratify=ylabels) # stratify is important in this to ensure class distribution
+```
+
+### Logistic Regression
+
+```{python}
+
+# Simple classification - Logistic Regression
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(max_iter=120000)
+
+```
+
+#### `CountVectorizer` Fit and Transform
+
+```{python}
+
+# Fit and transform into count_vector
+X_train_vectors = count_vector.fit_transform(X_train)
+X_test_vectors = count_vector.transform(X_test)
+
+```
+
+```{python}
+X_train_vectors.shape
+```
+
+```{python}
+X_test_vectors.shape
+```
+
+```{python}
+X.shape
+```
+
+```{python}
+# Classifier fit
+classifier.fit(X_train_vectors, y_train)
+```
+
+#### `CountVectorizer` statistics
+
+Logistic Regression Accuracy: *The proportion of data points that a logistic regression model correctly classified.*
+
+Logistic Regression Precision: *The ratio of correctly predicted positive cases tot he total number of cases the model predicted as positive.*
+
+Logistic Regression Recall: The ability of the model to correctly identify all the actual positive cases. Ratio of true positives to total actual positives.
+
+```{python}
+# Print some statistics
+predicted = classifier.predict(X_test_vectors)
+print("Logistic Regression Accuracy:", metrics.accuracy_score(y_test, predicted))
+print("Logistic Regression Precision:", metrics.precision_score(y_test, predicted))
+print("Logistic Regression Recall:", metrics.recall_score(y_test, predicted))
+```
+
+### What is `TfidfVectorizer`?
+
+Tf-idf Vectorizer (TF-IDF Vectorizer) is a common tool used in Natural Language Processing (NLP) for converting textual data into a numerical representation suitable for machine learning algorithms. It works by capturing the importance of words in a document based on a statistical measure called TF-IDF (Term Frequency-Inverse Document Frequency). It considers how common a word is across all documents in the corpus and applies scores. The more frequent the word, the lower the IDF score.
+
+**Benefits of Tf-idfVectorizer:**
+
+-   **Focuses on informative words:** By downplaying common words, it emphasizes words that hold more meaning for a specific document.
+
+-   **Suitable for various NLP tasks:** It can be used for tasks like document classification, topic modeling, and information retrieval.
+
+**Limitations of Tf-idfVectorizer:**
+
+-   **Ignores word order and context:** The order and context in which words appear are not directly considered.
+
+-   **Doesn't handle word meaning or sentiment:** It treats words based on their statistical properties, not their inherent meaning.
+
+```{python}
+# Use tdidf_vectorizer
+tfidf_vector = TfidfVectorizer(tokenizer = spacy_tokenizer,token_pattern=None)
+X_train_vectors = tfidf_vector.fit_transform(X_train)
+X_test_vectors = tfidf_vector.transform(X_test)
+```
+
+#### `TfidfVectorizer` statistics
+
+```{python}
+# Classifier and fit Logistic Regression
+classifier = LogisticRegression()
+classifier.fit(X_train_vectors, y_train)
+
+# Print some statistics
+predicted = classifier.predict(X_test_vectors)
+print("Logistic Regression Accuracy:", metrics.accuracy_score(y_test, predicted))
+print("Logistic Regression Precision:", metrics.precision_score(y_test, predicted))
+print("Logistic Regression Recall:", metrics.recall_score(y_test, predicted))
+
+```
+
+## Conclusion
+
+Comparing the two different vectorizers, the `CountVectorizer` performed better than the `TfidfVectorizer`. The `CountVectorizer` had a higher accuracy and recall. This is surprising, so much so that I had to double and triple check my work. Theoretically, the `TfidfVectorizer` should have performed better because it takes into account the frequency of words in the document and the entire corpus. The `CountVectorizer` only takes into account the frequency of words in the document. This is a good example of why it is important to test different models and vectorizers to see which one performs the best.
+
+This investigation into Natural Language Processing (NLP) techniques is ongoing, with a focus on exploring various vectorization models. Currently, efforts are directed towards understanding and implementing `Word2Vec`. Additionally, a deeper exploration of the preprocessing pipeline, encompassing techniques such as stemming, lemmatization, and speech filtering, is warranted
