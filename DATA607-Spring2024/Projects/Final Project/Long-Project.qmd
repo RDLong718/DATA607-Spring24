@@ -1,0 +1,452 @@
+---
+title: "NYPD Arrest Rate vs Weather Variables"
+author: "Rashad Long"
+format: html
+html:
+  code-fold: true
+  code-summary: "Show the code"
+  code-overflow: wrap
+editor: visual
+
+---
+
+# Introduction
+
+The NYPD Arrests Data-sets provides a detailed record of arrests in New York City during this period. It serves as a valuable resource for understanding crime patterns and trends within the city. The dataset encompasses a wide range of information, including the demographic details of individuals arrested, the types of crimes committed, and the locations where arrests occurred.
+
+Investigating the correlation between arrest rates and weather variables can yield significant insights that inform critical decisions across various domains. This analysis has the potential to influence public policy, policing strategies, and even resource allocation through tax optimization.
+
+## Data
+
+[NYPD Arrests Data (Historic)](https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u/about_data) - List of every arrest in NYC going back to 2006 through the end of the previous calendar year. This is a breakdown of every arrest effected in NYC by the NYPD going back to 2006 through the end of the previous calendar year. This data is manually extracted every quarter and reviewed by the Office of Management Analysis and Planning before being posted on the NYPD website. Each record represents an arrest effected in NYC by the NYPD and includes information about the type of crime, the location and time of enforcement.
+
+[NYPD Arrest Data (Year to Date)](https://data.cityofnewyork.us/Public-Safety/NYPD-Arrest-Data-Year-to-Date-/uip8-fykc/about_data) - This is a breakdown of every arrest effected in NYC by the NYPD during the current year. This data is manually extracted every quarter and reviewed by the Office of Management Analysis and Planning. Each record represents an arrest effected in NYC by the NYPD and includes information about the type of crime, the location and time of enforcement.
+
+[Weather Data](https://www.visualcrossing.com/) - Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather data. The [Weather API](https://www.visualcrossing.com/weather-api "Visual Crossing Weather API") is designed to integrate easily into any app or code, and prices are lower than any other provider in the industry. The data is used daily by a diverse customer-base including business analysts, data scientists, insurance professionals, energy producers, construction planners, and academics.
+
+```{r}
+#| warning: false
+
+# Install required packages if not already available
+if (!require("readr"))
+  install.packages("readr")
+library(readr)
+
+if (!require("tidyverse"))
+  install.packages("tidyverse")
+library(tidyverse)
+
+if (!require("infer"))
+  install.packages("infer")
+library(infer)
+
+if (!require("ggplot2"))
+  install.packages("ggplot2")
+library(ggplot2)
+
+if (!require("RSocrata"))
+  install.packages("RSocrata")
+library(RSocrata)
+
+if (!require("httr"))
+  install.packages("httr")
+library(httr)
+
+```
+
+### Import Data
+
+First I read the csv files into data-frames. First the Weather Data then the 2 NYPD Data sets.
+```{r}
+#| echo: false
+
+historic_arrest_data <- read.socrata(
+  "https://data.cityofnewyork.us/resource/8h9b-rp9u.json",
+  app_token = "FAZML7iQJUs0HyW2aTqiEzSMR",
+  email     = "RDLong718@gmail.com",
+  password  = "M@Goo007!"
+)
+
+head(historic_arrest_data)
+
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+arrest_data_ytd <- read.socrata(
+  "https://data.cityofnewyork.us/resource/uip8-fykc.json",
+  app_token = "FAZML7iQJUs0HyW2aTqiEzSMR",
+  email     = "RDLong718@gmail.com",
+  password  = "M@Goo007!"
+)
+
+head(arrest_data_ytd)
+
+```
+
+```{r}
+#| warning: false
+
+# Replace '8XZYX6CMANT9QRNP4Q4WEWKGJ' with your actual Visual Crossing API key
+api_key <- "8XZYX6CMANT9QRNP4Q4WEWKGJ"
+
+# Base URL for the weather data API
+base_url <- "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
+
+# Define location and date range
+location <- "New%20York%20City%2CUSA"
+start_date <- "2006-01-01"
+end_date <- "2024-05-04"
+
+# Build the API request URL
+url <- paste0(
+  base_url,
+  location,
+  "/",
+  start_date,
+  "/",
+  end_date,
+  "?unitGroup=metric&include=days&key=",
+  api_key,
+  "&contentType=csv"
+)
+
+# Send GET request and handle errors
+response <- GET(url)
+
+if (!response$status_code == 200) {
+  stop(paste0("Unexpected Status code: ", response$status_code))
+}
+
+# Read CSV data from response content
+weather_data <- read_csv(response$content)
+
+head(weather_data)
+
+```
+
+### Tidy and Manipulate Data
+
+With the data successfully loaded, we can commence the data cleaning and manipulation phase. We will prioritize the NYPD data-sets, followed by the weather dataset, to ensure a consistent workflow.
+
+#### NYPD Datasets
+
+-   Combined historic and year to date arrest data
+-   Made all column names lowercase
+-   Removed every column except arrest_date, arrest_boro, age_group, perp_sex, and perp_race
+-   Changed name of arrest_date column to date
+-   Adjusted the arrest_boro column to display the full names
+-   Set date column as date object
+
+```{r}
+
+#Combine historic and year to date arrest data
+arrest_data <- bind_rows(arrest_data_ytd, historic_arrest_data)
+
+# Make all column names lowercase
+colnames(arrest_data) <- tolower(colnames(arrest_data))
+
+# Remove every column except arrest_date, arrest_boro, age_group, perp_sex, and perp_race
+arrest_data <-
+  arrest_data |> select(arrest_date, arrest_boro, age_group, perp_sex, perp_race)
+
+# Change name of arrest_date column to date
+colnames(arrest_data)[colnames(arrest_data) == "arrest_date"] <-
+  "date"
+
+# Adjust the arrest_boro column to display the full names
+arrest_data$arrest_boro <- case_when(
+  arrest_data$arrest_boro == "M" ~ "Manhattan",
+  arrest_data$arrest_boro == "B" ~ "Bronx",
+  arrest_data$arrest_boro == "K" ~ "Brooklyn",
+  arrest_data$arrest_boro == "Q" ~ "Queens",
+  arrest_data$arrest_boro == "S" ~ "Staten Island",
+  TRUE ~ arrest_data$arrest_boro
+)
+
+# Set date column as date object
+arrest_data$date <- as.Date(arrest_data$date, format = "%m/%d/%Y")
+
+head(arrest_data)
+
+```
+
+#### Weather data
+
+-   Removed unneeded columns
+-   Convert temperatures to Fahrenheit
+-   Convert precip column to inches
+-   Adjust variable names
+-   Create new variable called "isRain"
+-   Set date column as date object
+
+```{r}
+
+# Remove unneeded columns
+weather_data <-
+  weather_data |>  select(datetime, temp, precip, humidity, conditions)
+head(weather_data)
+
+# Convert temperatures to Fahrenheit
+weather_data$temp <- (weather_data$temp * 9 / 5) + 32
+
+# Convert precip variable to inches
+weather_data$precip <- round(weather_data$precip * 0.0393701, 3)
+
+# Adjust variable names
+colnames(weather_data)[colnames(weather_data) == "datetime"] <-
+  "date"
+
+# Create new variable called "isRain"
+weather_data$isRain <-
+  grepl("rain", weather_data$conditions, ignore.case = TRUE)
+
+# Remove conditions column
+weather_data <- weather_data |> select(-conditions)
+
+# Create Date object
+weather_data$date <- as.Date(weather_data$date, format = "%m/%d/%Y")
+
+head(weather_data)
+
+```
+
+The final step involves integrating the two data-sets using the date attribute as the key. This consolidated dataset will serve as the foundation for our subsequent analysis, enabling us to explore the potential relationships between arrest rates and weather conditions
+
+```{r}
+
+# Left join
+combined_data <- left_join(arrest_data, weather_data, by = "date")
+head(combined_data[order(combined_data$date), ], 20)
+
+```
+
+To facilitate our exploratory analysis, we will construct a new data-frame that aggregates daily arrest counts from the combined dataset.
+
+```{r}
+
+# Aggregate the data by date
+total_arrest_data <- combined_data |>
+  group_by(date) |>
+  mutate(arrests = n())
+
+total_arrest_data <- total_arrest_data |>
+  distinct(date, .keep_all = TRUE)
+
+```
+
+## Explaratory Data Analysis
+
+### Precipitation vs Average Daily Arrests
+
+Summary of Average Daily Arrests
+
+As we see on the summary of daily arrests, the average daily arrests is 869 with a minimum of 91 and a maximum of 1773.
+```{r}
+
+# Summary Arrests
+summary(total_arrest_data$arrests)
+
+```
+
+Visualization of the summary of daily arrests
+
+```{r}
+
+# Visualize the summary of daily arrests
+total_arrest_data |>
+  ggplot(aes(x = arrests)) +
+  geom_boxplot(fill = 'blue', color = 'black') +
+  labs(title = "Distribution of Daily Arrests",
+       x = "Arrests",
+       y = "Count") +
+  theme_minimal()
+
+```
+
+The daily arrests are higher when it does not rain than when it does.
+
+```{r}
+# Plotting side by side box plot for isRain and avg daily arrests
+total_arrest_data |> 
+  ggplot(aes(x = isRain, y = arrests, fill = isRain)) +
+  geom_boxplot() +
+  labs(title = "Total Arrests by Rain",
+       x = "Rain",
+       y = "Total Arrests") +
+  theme_minimal()
+
+```
+We can also calculate
+
+```{r}
+
+# Calculate the daily avg arrests when it rains
+total_arrest_data |> 
+  group_by(isRain) |> 
+  summarise(avg_arrests = mean(arrests, na.rm =TRUE))
+
+# Calculate total arrests when it rains
+total_arrest_data |> 
+  group_by(isRain) |> 
+  summarise(total_arrests = sum(arrests, na.rm =TRUE))
+
+```
+
+Null Hypothesis (H₀): There is no difference in the average daily arrests between when it rains and when it does not rain.
+
+Alternative Hypothesis (H₁): There is a difference in the average daily arrests between when it rains and when it does not rain.
+
+```{r}
+
+# Conduct hypothesis test to determine if there is a significant difference in the average daily arrests when it rains and when it does not rain
+obs_diff <- total_arrest_data |> 
+  drop_na(isRain) |> 
+  specify(arrests ~ isRain) |> 
+  calculate(stat = "diff in means", order = c("TRUE", "FALSE"))
+
+# Simulate
+null_dist <- total_arrest_data |> 
+  drop_na(isRain) |> 
+  specify(arrests ~ isRain) |> 
+  hypothesize(null = "independence") |> 
+  generate(reps = 1000, type = "permute") |> 
+  calculate(stat = "diff in means", order = c("TRUE", "FALSE"))
+
+# Visualize
+ggplot(data = null_dist, aes(x = stat)) +
+  geom_histogram(bins = 20, color = "#006BB6", fill = "#F58426", linewidth =1.5) +
+  labs(title = "Distribution of Test Statistic (Null Hypothesis)",
+       x = "Test Statistic",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.margin = margin(unit = "points", b = 15, l = 15, r = 15, t = 10)
+  )
+
+```
+
+```{r}
+#| warning: false
+
+# Get p-value
+null_dist %>%
+  get_p_value(obs_stat = obs_diff, direction = "two_sided")
+
+```
+
+A reported p-value of 0 indicates extremely strong evidence against the null hypothesis. This suggests that the observed relationship between arrest rates and rain is unlikely to be due to random chance. In other words, the data provides strong evidence that rain may be associated with arrest rates.
+
+Correlation between temperature and arrests
+
+```{r}
+# Visualize the distribution of arrests
+hist(total_arrest_data$arrests, main = "Distribution of Arrests", xlab = "Arrests")
+abline(v = mean(total_arrest_data$arrests), col = "#F58426", lwd = 2)
+abline(v = median(total_arrest_data$arrests), col = "#006BB6", lwd = 2)
+legend("topleft", legend = c("Mean", "Median"), col = c("#F58426", "#006BB6"), lwd = 2)
+
+```
+Looking at the scatterplot we see that the concentration of arrests fall in between what one may call the "temperate" range of 40°F to 80°F. This shows that there may be a correlation between the temperature and the number of arrests. It shows a positive correlation up until the extreme temperatures.
+```{r}
+#| warning: false
+
+# Visualize the relationship between temperature and arrests
+total_arrest_data |> 
+  ggplot(aes(x = temp, y = arrests)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Temperature vs. Arrests",
+       x = "Temperature (°F)",
+       y = "Arrests") +
+  theme_minimal()
+
+
+```
+
+
+Using a linear model will does not show a correlation between temperature and arrests. The p-value is 0.79 which is not significant. This indicates that the temperature does not have a significant impact on the number of arrests.
+```{r}
+
+# Fit a linear model to the data
+lm_model <- lm(arrests ~ temp, data = total_arrest_data)
+summary(lm_model)
+
+```
+
+We have a weak positive correlation between temperature and arrests. Indicating there isn't a strong relationship between the two variables.
+
+```{r}
+# Correlation between temperature and arrests
+cor(total_arrest_data$temp, total_arrest_data$arrests)
+
+```
+
+```{r}
+# Run correlation test
+cor.test(total_arrest_data$temp, total_arrest_data$arrests)
+
+```
+Non-Linearity between temperature and arrests
+```{r}
+# Fit a quadratic model to the data
+quad_model <- lm(arrests ~ poly(temp, 2), data = total_arrest_data)
+summary(quad_model)
+
+```
+Lets try polynomial regression model
+
+```{r}
+plot(total_arrest_data$temp, total_arrest_data$arrests, main = "Temperature vs. Arrests", xlab = "Temperature (°F)", ylab = "Arrests")
+attach(total_arrest_data)
+spline2 <- smooth.spline(temp, arrests, df = 2)
+lines(spline2, col = "red")
+
+```
+```{r}
+plot(total_arrest_data$temp, total_arrest_data$arrests, main = "Temperature vs. Arrests", xlab = "Temperature (°F)", ylab = "Arrests")
+attach(total_arrest_data)
+spline3 <- smooth.spline(temp, arrests, df = 3)
+lines(spline3, col = "red")
+
+```
+
+```{r}
+
+# Build polynomial model
+poly.model <- lm(arrests ~ temp+I(temp^2), data = total_arrest_data)
+summary(poly.model)
+
+```
+
+```{r}
+
+# Visualize
+total_arrest_data |> 
+  ggplot(aes(x = temp, y = arrests)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE) +
+  labs(title = "Temperature vs. Arrests",
+       x = "Temperature (°F)",
+       y = "Arrests") +
+  theme_minimal()
+
+
+```
+
+
+
+
+
+Conclusion:
+
+I have attempted to investigate the correlation between temperature and the number of arrests in New York City. I have used a linear model to analyze the relationship between temperature and the number of arrests. I also used a polynomial model to analyze the relationship between temperature and the number of arrests.
+
+It seems that the correlation isn't strong enough to make a significant impact on the number of arrests. The data shows that the number of arrests is higher when it does not rain than when it does. This could be due to the fact that people are more likely to stay indoors when it rains. The data also shows that the number of arrests is higher when the temperature is between 40°F and 80°F. This could be due to the fact that people are more likely to be outside when the temperature is moderate. Overall, the data shows that there is not a linear correlation between weather variables and the number of arrests in New York City however there is some correlation. However, there could be another model that can better show a correlation. 
+
+
+
